@@ -10,13 +10,13 @@ import java.util.Stack;
 
 public class EvaluateString
 {
-	public static int evaluate(String expression)
+	public static double evaluate(String expression)
 	{
 		char[] tokens = expression.toCharArray();
 
 		// Stack for numbers: 'values'
-		Stack<Integer> values = new
-							Stack<Integer>();
+		Stack<Double> values = new
+							Stack<Double>();
 
 		// Stack for Operators: 'ops'
 		Stack<Character> ops = new
@@ -44,7 +44,7 @@ public class EvaluateString
 						tokens[i] >= '0' && 
 						tokens[i] <= '9')
 					sbuf.append(tokens[i++]);
-				values.push(Integer.parseInt(sbuf.
+				values.push(Double.parseDouble(sbuf.
 									toString()));
 			
 				// right now the i points to 
@@ -77,7 +77,7 @@ public class EvaluateString
 			else if (tokens[i] == '+' || 
 					tokens[i] == '-' ||
 					tokens[i] == '*' || 
-						tokens[i] == '/')
+						tokens[i] == '/'||tokens[i]=='^')
 			{
 				// While top of 'ops' has same 
 				// or greater precedence to current
@@ -115,11 +115,18 @@ public class EvaluateString
 	public static boolean hasPrecedence(
 						char op1, char op2)
 	{
+		
 		if (op2 == '(' || op2 == ')')
 			return false;
 		if ((op1 == '*' || op1 == '/') && 
 			(op2 == '+' || op2 == '-'))
 			return false;
+		if ((op1 == '^') && (op2 == '+' || op2 == '-')) 
+            return false;
+		if ((op1 == '^') && (op2 == '*' || op2 == '/')) 
+            return false;
+		if(op1=='^'&&op2=='^')
+        	return true;
 		else
 			return true;
 	}
@@ -127,8 +134,8 @@ public class EvaluateString
 	// A utility method to apply an 
 	// operator 'op' on operands 'a' 
 	// and 'b'. Return the result.
-	public static int applyOp(char op, 
-						int b, int a)
+	public static double applyOp(char op, 
+						double b, double a)
 	{
 		switch (op)
 		{
@@ -144,6 +151,13 @@ public class EvaluateString
 				UnsupportedOperationException(
 					"Cannot divide by zero");
 			return a / b;
+		case '^':
+			if (b>1000)
+				throw new 
+				UnsupportedOperationException("Exponent can't be more than 4 digit");
+				
+			return Math.pow(a, b);
+		//default : return evaluate("");
 		}
 		return 0;
 	}
@@ -155,6 +169,7 @@ public class EvaluateString
 		System.out.print("Enter the Expression to calculate:");
 		String exp = sc.nextLine();
 		System.out.print(EvaluateString.evaluate(exp));
+		
 //		
 //		System.out.println(EvaluateString.
 //						evaluate("10 + 2 * 6"));
