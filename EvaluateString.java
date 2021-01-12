@@ -2,6 +2,7 @@ package com.StackImplementation;
 
 
 import java.util.Scanner;
+
 /* A Java program to evaluate a 
 given expression where tokens 
 are separated by space. 
@@ -13,6 +14,7 @@ public class EvaluateString
 	public static double evaluate(String expression)
 	{
 		char[] tokens = expression.toCharArray();
+		//System.out.println(tokens);
 
 		// Stack for numbers: 'values'
 		Stack<Double> values = new
@@ -29,23 +31,28 @@ public class EvaluateString
 			// whitespace, skip it
 			if (tokens[i] == ' ')
 				continue;
-
 			// Current token is a number, 
 			// push it to stack for numbers
-			if (tokens[i] >= '0' && 
-				tokens[i] <= '9')
-			{
-				StringBuffer sbuf = new
-							StringBuffer();
-				
-				// There may be more than one 
-				// digits in number
-				while (i < tokens.length && 
-						tokens[i] >= '0' && 
+			try {
+				if (tokens[i] >= '0' && 
 						tokens[i] <= '9')
-					sbuf.append(tokens[i++]);
-				values.push(Double.parseDouble(sbuf.
-									toString()));
+				{
+					StringBuffer sbuf = new StringBuffer();
+				
+					// There may be more than one 
+					// digits in number
+					while (i < tokens.length && 
+							tokens[i] >= '0' && 
+							tokens[i] <= '9')
+					{
+						try {
+							sbuf.append(tokens[i++]);
+							values.push(Double.parseDouble(sbuf.toString()));
+						}
+						catch(ClassCastException e) {
+							System.out.print(e);
+						}
+					}
 			
 				// right now the i points to 
 				// the character next to the digit,
@@ -55,10 +62,22 @@ public class EvaluateString
 				// decrease the value of i by 1 to
 				// correct the offset.
 				i--;
+				}
+			}
+			catch(Exception e) {
+				System.out.print("Not a number");
 			}
 
 			// Current token is an opening brace, 
 			// push it to 'ops'
+			if(tokens[i]!='(' && tokens[i]!=')' && tokens[i] != '+' &&
+					tokens[i] != '-' && tokens[i] != '*' &&
+						tokens[i] != '/' && tokens[i]!='^' && tokens[i]!='0'
+						&& tokens[i]!='1' && tokens[i]!='2' && tokens[i]!='3'
+						&& tokens[i]!='4' && tokens[i]!='5' && tokens[i]!='6'
+						&& tokens[i]!='7' && tokens[i]!='8' && tokens[i]!='9')
+				throw new UnsupportedOperationException("Not an operand or a number");
+				
 			else if (tokens[i] == '(')
 				ops.push(tokens[i]);
 
@@ -87,26 +106,34 @@ public class EvaluateString
 				while (!ops.empty() && 
 					hasPrecedence(tokens[i], 
 									ops.peek()))
-				values.push(applyOp(ops.pop(), 
+				{
+				
+					values.push(applyOp(ops.pop(), 
 								values.pop(),
 								values.pop()));
-
+					System.out.print(values);
+				}
+				
 				// Push current token to 'ops'.
 				ops.push(tokens[i]);
 			}
+			//}
+			
 		}
 
 		// Entire expression has been 
 		// parsed at this point, apply remaining
 		// ops to remaining values
 		while (!ops.empty())
+		{
 			values.push(applyOp(ops.pop(), 
 							values.pop(), 
 						values.pop()));
-
+		}
 		// Top of 'values' contains 
 		// result, return it
 		return values.pop();
+		
 	}
 
 	// Returns true if 'op2' has higher 
